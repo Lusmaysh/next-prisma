@@ -1,95 +1,119 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+// src/app/page.js
+'use client'; // <-- Tambahkan ini di baris paling atas
+
+import React, { useState, useEffect } from 'react';
+import PostsList from '../components/PostsList';
+import PostForm from '../components/PostForm';
+import './crud.css'; // Impor file CSS baru kita
+import styles from './page.module.css';
 
 export default function Home() {
+  // State untuk menyimpan daftar posts
+  const [posts, setPosts] = useState([]);
+  // State untuk status loading
+  const [isLoading, setIsLoading] = useState(true);
+  // State untuk mengontrol visibilitas form (modal)
+  const [isFormVisible, setIsFormVisible] = useState(false);
+  // State untuk menyimpan post yang sedang diedit
+  const [currentPost, setCurrentPost] = useState(null);
+
+  // Fungsi untuk mengambil data posts dari API
+  const fetchPosts = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch('/api/posts');
+      const data = await response.json();
+      if (data.sucess) {
+        setPosts(data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch posts:", error);
+    }
+    setIsLoading(false);
+  };
+
+  // useEffect untuk memanggil fetchPosts saat komponen pertama kali dimuat
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+
+  // Fungsi untuk menangani submit form (Create & Update)
+  const handleFormSubmit = async (formData) => {
+    const method = currentPost ? 'PATCH' : 'POST';
+    const url = currentPost ? `/api/posts/${currentPost.id}` : '/api/posts';
+
+    try {
+      const response = await fetch(url, {
+        method: method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        // Jika berhasil, tutup form dan muat ulang data posts
+        setIsFormVisible(false);
+        setCurrentPost(null);
+        fetchPosts();
+      } else {
+        console.error("Failed to save post");
+      }
+    } catch (error) {
+      console.error("Error submitting form:", error);
+    }
+  };
+
+  // Fungsi untuk membuka form dalam mode "Create"
+  const handleCreate = () => {
+    setCurrentPost(null);
+    setIsFormVisible(true);
+  };
+
+  // Fungsi untuk membuka form dalam mode "Edit"
+  const handleEdit = (post) => {
+    setCurrentPost(post);
+    setIsFormVisible(true);
+  };
+
+  // Fungsi untuk menghapus post
+  const handleDelete = async (postId) => {
+    // Tampilkan konfirmasi sebelum menghapus
+    if (window.confirm("Are you sure you want to delete this post?")) {
+      try {
+        const response = await fetch(`/api/posts/${postId}`, { method: 'DELETE' });
+        if (response.ok) {
+          // Jika berhasil, muat ulang data posts
+          fetchPosts();
+        } else {
+          console.error("Failed to delete post");
+        }
+      } catch (error) {
+        console.error("Error deleting post:", error);
+      }
+    }
+  };
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+      <div className="crud-container">
+        <div className="crud-header">
+          <h1>Prisma ORM</h1>
+          <button onClick={handleCreate} className="btn btn-primary">Create New Post</button>
         </div>
-      </div>
+        
+        {isLoading ? (
+          <p>Loading posts...</p>
+        ) : (
+          <PostsList posts={posts} onEdit={handleEdit} onDelete={handleDelete} />
+        )}
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+        {isFormVisible && (
+          <PostForm
+            post={currentPost}
+            onSubmit={handleFormSubmit}
+            onClose={() => setIsFormVisible(false)}
+          />
+        )}
       </div>
     </main>
-  )
+  );
 }
