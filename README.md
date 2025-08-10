@@ -1,36 +1,97 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# 🚀 Next-Prisma Starter
 
-## Getting Started
+**Template** pengembangan cepat untuk aplikasi Next.js dengan integrasi Prisma ORM dan koneksi database siap pakai.
 
-First, run the development server:
+🌐 **Demo/Live:**   
+📦 **Repo:** [Lusmaysh/next-prisma](https://github.com/Lusmaysh/next-prisma)
 
-```bash
+---
+
+## ⏱ Fitur Inti
+
+- Setup rapi menggunakan **Next.js**  
+- ORM modern via **Prisma** – keamanan tipe & migrasi database  
+- Sinkronisasi sederhana antara API dan database  
+- Siap digunakan bersama Next.js API Routes atau framework lainnya
+
+---
+
+## 🛠 Teknologi yang Digunakan
+
+| Teknologi     | Fungsi |
+|---------------|--------|
+| **Next.js**   | Framework React penuh fitur untuk front-end dan API |
+| **Prisma**    | ORM tipe-aman yang mendukung migrasi, validasi, dan kueri SQL |
+| **TypeScript** (opsional) | Menerapkan tipe statis untuk keamanan kode |
+| **Deployment** | Bisa di-deploy ke Vercel, Netlify, atau platform lainnya |
+
+---
+
+## 📦 Cara Mulai
+
+~~~bash
+git clone https://github.com/Lusmaysh/next-prisma.git
+cd next-prisma
+npm install        # atau yarn install / pnpm install
+~~~
+
+1. Siapkan database (PostgreSQL, MySQL, SQLite, dll.)  
+2. Tambahkan konfigurasi connection string di file `.env` dengan format:
+```
+DATABASE_URL="postgresql://..."
+```
+3. Jalankan migrasi Prisma:
+~~~bash
+npx prisma migrate dev --name init
+~~~
+4. Jalankan pengembangan:
+~~~bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+~~~
+5. Akses `http://localhost:3000`
+
+---
+
+## 📂 Struktur Direktori (contoh)
+
+```
+next-prisma/
+├── prisma/
+│ ├── schema.prisma
+│ └── migrations/
+├── pages/
+│ ├── api/
+│ └── index.tsx
+├── .env
+├── package.json
+└── README.md
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+## 🔄 Migrasi & Prisma Client
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+- **Membuat migrasi**:
+  ~~~bash
+  npx prisma migrate dev --name init
+  ~~~
 
-## Learn More
+- **Menggunakan Prisma Client**:
+  ~~~ts
+  import { PrismaClient } from '@prisma/client';
+  const prisma = new PrismaClient();
+  ~~~
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🤝 Kontribusi & Lisensi
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+- **Lisensi**: (tambahkan tipe lisensi jika ada, misalnya MIT)  
+- **Kontribusi**: Fork repositori → buat branch fitur → ajukan pull request
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 📬 Kontak
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Pertanyaan? Kolaborasi? Silakan kunjungi profil GitHub saya:  
+🔗 [Lusmaysh](https://github.com/Lusmaysh)
